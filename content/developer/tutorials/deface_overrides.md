@@ -138,7 +138,7 @@ Deface::Override.new(:virtual_path => "spree/admin/products/_form",
     <%% end %>
   ")```
 
-There is one more change we will need to make in order to get the updated product edit form working. We need to make `sale_price` attr_accessible on the `Spree::Product` model and delegate to the master variant for `sale_price`.
+In order to get the updated product edit form working we need to make `sale_price` attr_accessible on the `Spree::Product` model and delegate to the master variant for `sale_price`.
 
 We can do this by creating a new file `app/models/spree/product_decorator.rb` and adding the following content to it:
 
@@ -150,5 +150,13 @@ module Spree
     attr_accessible :sale_price
   end
 end```
+
+Finally, we need to account for i18n and allow this field label to be translated.  Edit `config/locals/en.yml` to include
+
+```yaml
+en:
+  sale_price: "Sale Price"
+
+```
 
 Now, when we head to `http://localhost:3000/admin/products` and edit a product, we should be able to set a sale price for the product and be able to view it on our sale page, `http://localhost:3000/sale`. Note that you will likely need to restart our example Spree application (created in the <%= link_to "Getting Started", 'getting_started' %> tutorial).
