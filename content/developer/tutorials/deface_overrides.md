@@ -116,8 +116,8 @@ So we want to override `spree/admin/products/_form.html.erb`. Here is the part o
 ```erb
 <div class="right four columns omega" data-hook="admin_product_form_right">
 <%%= f.field_container :price do %>
-    <%%= f.label :price, raw(t(:master_price) + content_tag(:span, ' *',
-      :class => "required")) %>
+    <%%= f.label :price, raw(Spree.t(:master_price) + content_tag(:span, ' *',
+     :class => "required")) %>
     <%%= f.text_field :price, :value => number_to_currency(@product.price,
       :unit => '') %>
     <%%= f.error_message_on :price %>
@@ -131,14 +131,14 @@ Deface::Override.new(:virtual_path => "spree/admin/products/_form",
   :insert_after => "code[erb-loud]:contains('text_field :price')",
   :text => "
     <%%= f.field_container :sale_price do %>
-      <%%= f.label :sale_price, raw(t(:sale_price) + content_tag(:span, ' *')) %>
+      <%%= f.label :sale_price, raw(Spree.t(:sale_price) + content_tag(:span, ' *')) %>
       <%%= f.text_field :sale_price, :value =>
         number_to_currency(@product.sale_price, :unit => '') %>
       <%%= f.error_message_on :sale_price %>
     <%% end %>
   ")```
 
-In order to get the updated product edit form working we need to make `sale_price` attr_accessible on the `Spree::Product` model and delegate to the master variant for `sale_price`.
+There is one more change we will need to make in order to get the updated product edit form working. We need to make `sale_price` attr_accessible on the `Spree::Product` model and delegate to the master variant for `sale_price`.
 
 We can do this by creating a new file `app/models/spree/product_decorator.rb` and adding the following content to it:
 
@@ -150,13 +150,5 @@ module Spree
     attr_accessible :sale_price
   end
 end```
-
-Finally, we need to account for i18n and allow this field label to be translated.  Edit `config/locals/en.yml` to include
-
-```yaml
-en:
-  sale_price: "Sale Price"
-
-```
 
 Now, when we head to `http://localhost:3000/admin/products` and edit a product, we should be able to set a sale price for the product and be able to view it on our sale page, `http://localhost:3000/sale`. Note that you will likely need to restart our example Spree application (created in the <%= link_to "Getting Started", 'getting_started' %> tutorial).
